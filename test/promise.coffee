@@ -1,6 +1,8 @@
 assert = require('assert')
 util = require('util')
-usb = require("../usb.js")
+# should act exactly like usb
+usb = require("../promise.js")
+
 
 # AM01 is 16d0:0e1e
 VID = 0x16d0;
@@ -11,7 +13,7 @@ if typeof gc is 'function'
 	# running with --expose-gc, do a sweep between tests so valgrind blames the right one
 	afterEach -> gc()
 
-describe 'Module USB', ->
+describe 'Module USB/Promise', ->
 	it 'should describe basic constants', ->
 		assert.notEqual(usb, undefined, "usb must be undefined")
 		assert.ok((usb.LIBUSB_CLASS_PER_INTERFACE != undefined), "Constants must be described")
@@ -67,6 +69,10 @@ describe 'Device', ->
 			assert.equal(s, devManufacturer)
 			done()
 
+	it 'gets string descriptors async', ->
+		mfr = await device.getStringDescriptor(device.deviceDescriptor.iManufacturer)
+		assert.equal(mfr, devManufacturer)
+
 	describe 'control transfer', ->
 		b = Buffer.from([0x30...0x40])
 		# AM01 doesn't have predefined OUT endpoint readily available. todo
@@ -76,7 +82,13 @@ describe 'Device', ->
 		# 		done()
 
 		it "should fail when bmRequestType doesn't match buffer / length", ->
-			assert.throws(-> device.controlTransfer(0x40, 0x81, 0, 0, 64, () => {}))
+			device.controlTransfer(0x40, 0x81, 0, 0, 64)
+				.then ->
+					null
+				.catch (ex) ->
+					ex
+				.then (ex) ->
+					assert(ex, TypeError)
 
 		# AM01 doesn't have predefined IN endpoint readily available. todo
 		# it 'should IN transfer when the IN bit is set', (done) ->

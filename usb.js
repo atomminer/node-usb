@@ -350,6 +350,8 @@ Interface.prototype.endpoint = function(addr){
 	}
 }
 
+module.exports.Interface = Interface;
+
 function Capability(device, id){
 	this.device = device
 	this.id = id
@@ -407,6 +409,8 @@ Endpoint.prototype.stopPoll = function(cb){
 	this.pollActive = false
 	if (cb) this.once('end', cb);
 }
+
+exports.Endpoint = Endpoint;
 
 function InEndpoint(device, descriptor){
 	Endpoint.call(this, device, descriptor)

@@ -8,7 +8,7 @@ void handleCompletion(Transfer* t);
 UVQueue<Transfer*> completionQueue(handleCompletion);
 #endif
 
-Transfer::Transfer() : async("transfer") {
+Transfer::Transfer() {
 	transfer = libusb_alloc_transfer(0);
 	transfer->callback = usbCompletionCb;
 	transfer->user_data = this;
@@ -123,7 +123,8 @@ void handleCompletion(Transfer* self){
 		Local<Value> argv[] = {error, buffer,
 			Nan::New<Uint32>((uint32_t) self->transfer->actual_length)};
 		Nan::TryCatch try_catch;
-		self->async.runInAsyncScope(self->handle(), Nan::New(self->v8callback), 3, argv);
+		Nan::AsyncResource async("transfer");
+		async.runInAsyncScope(self->handle(), Nan::New(self->v8callback), 3, argv);
 		if (try_catch.HasCaught()) {
 			Nan::FatalException(try_catch);
 		}

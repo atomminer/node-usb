@@ -1,7 +1,16 @@
+[![Build Status](https://travis-ci.com/atomminer/node-usb.svg?branch=master)](https://travis-ci.com/atomminer/node-usb) [![DeepScan grade](https://deepscan.io/api/teams/12301/projects/15648/branches/316032/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=12301&pid=15648&bid=316032)
+
+This is node-usb library forked from https://github.com/tessel/node-usb 
+
+What's different from original node-usb:
+* Removed deprecated calls Nan::MakeCallback
+* Updated Nan and bindings to the latest version
+* Added Promise wrapper
+* Changed tests to be more AM oriented
+
+
 USB Library for Node.JS
 ===============================
-
-[![Build Status](https://github.com/tessel/node-usb/workflows/prebuild/badge.svg)](https://github.com/tessel/node-usb/actions)
 
 Node.JS library for communicating with USB devices in JavaScript / CoffeeScript.
 

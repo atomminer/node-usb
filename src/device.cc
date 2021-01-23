@@ -10,7 +10,6 @@
 #define MAX_PORTS 7
 
 static Nan::Persistent<v8::FunctionTemplate> device_constructor;
-static Nan::AsyncResource asyncDevice("device");
 
 Device::Device(libusb_device* d): device(d), device_handle(0) {
 	libusb_ref_device(device);
@@ -235,7 +234,8 @@ struct Req{
 			}
 			Local<Value> argv[1] = {error};
 			Nan::TryCatch try_catch;
-			asyncDevice.runInAsyncScope(device, Nan::New(baton->callback), 1, argv);
+			Nan::AsyncResource async("device");
+			async.runInAsyncScope(device, Nan::New(baton->callback), 1, argv);
 			if (try_catch.HasCaught()) {
 				Nan::FatalException(try_catch);
 			}

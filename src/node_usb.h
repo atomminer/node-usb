@@ -49,7 +49,6 @@ struct Transfer: public Nan::ObjectWrap {
 	Device* device;
 	Nan::Persistent<Object> v8buffer;
 	Nan::Persistent<Function> v8callback;
-	Nan::AsyncResource async;
 
 	static void Init(Local<Object> exports);
 

@@ -121,7 +121,6 @@ NAN_METHOD(GetDeviceList) {
 }
 
 Nan::Persistent<Object> hotplugThis;
-static Nan::AsyncResource asyncUSB("hotplug");
 
 void handleHotplug(std::pair<libusb_device*, libusb_hotplug_event> info){
 	Nan::HandleScope scope;
@@ -150,7 +149,8 @@ void handleHotplug(std::pair<libusb_device*, libusb_hotplug_event> info){
 	}
 
 	Local<Value> argv[] = {eventName, v8dev};
-	asyncUSB.runInAsyncScope(Nan::New(hotplugThis), "emit", 2, argv);
+	Nan::AsyncResource async("hotplug");
+	async.runInAsyncScope(Nan::New(hotplugThis), "emit", 2, argv);
 }
 
 bool hotplugEnabled = 0;
