@@ -1,3 +1,4 @@
+#include <nan.h>
 #include "node_usb.h"
 #include "uv_async_queue.h"
 
@@ -120,6 +121,7 @@ NAN_METHOD(GetDeviceList) {
 }
 
 Nan::Persistent<Object> hotplugThis;
+static Nan::AsyncResource asyncUSB("hotplug");
 
 void handleHotplug(std::pair<libusb_device*, libusb_hotplug_event> info){
 	Nan::HandleScope scope;
@@ -148,7 +150,7 @@ void handleHotplug(std::pair<libusb_device*, libusb_hotplug_event> info){
 	}
 
 	Local<Value> argv[] = {eventName, v8dev};
-	Nan::MakeCallback(Nan::New(hotplugThis), "emit", 2, argv);
+	asyncUSB.runInAsyncScope(Nan::New(hotplugThis), "emit", 2, argv);
 }
 
 bool hotplugEnabled = 0;
