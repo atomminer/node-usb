@@ -42,7 +42,7 @@ usb.Device.prototype.controlTransfer = function(bmRequestType, bRequest, wValue,
 	const Promise = usb.Promise || global.Promise;
 	if(!Promise) throw new Error('No Promise implementation available.');
 	return new Promise((resolve, reject) => {
-		const cb = (target, err, buff) => {
+		const cb = (err, buff) => {
 			if(err) return reject(err);
 			resolve(buff);
 		}
@@ -95,9 +95,22 @@ usb.Device.prototype.setConfiguration = function(desired, cb) {
 	const Promise = usb.Promise || global.Promise;
 	if(!Promise) throw new Error('No Promise implementation available.');
 	return new Promise((resolve, reject) => {
-		this.setConfigurationCb(desired, (data, err) => {
+		this.setConfigurationCb(desired, (err) => {
 			if(err) return reject(err);
-			resolve(data);
+			resolve();
+		});
+	})
+}
+
+usb.Interface.prototype.releaseCb = usb.Interface.prototype.release;
+usb.Interface.prototype.release = function(closeEndpoints, cb) {
+	if(cb) return this.releaseCb(closeEndpoints, cb);
+	const Promise = usb.Promise || global.Promise;
+	if(!Promise) throw new Error('No Promise implementation available.');
+	return new Promise((resolve, reject) => {
+		this.releaseCb(closeEndpoints, (err) => {
+			if(err) return reject(err);
+			resolve();
 		});
 	})
 }
@@ -108,7 +121,7 @@ usb.Interface.prototype.setAltSetting = function(altSetting, cb) {
 	const Promise = usb.Promise || global.Promise;
 	if(!Promise) throw new Error('No Promise implementation available.');
 	return new Promise((resolve, reject) => {
-		this.setAltSettingCb(altSetting, (data, err) => {
+		this.setAltSettingCb(altSetting, (err) => {
 			if(err) return reject(err);
 			resolve(data);
 		});
@@ -147,7 +160,7 @@ usb.InEndpoint.prototype.transfer = function(length, cb) {
 	const Promise = usb.Promise || global.Promise;
 	if(!Promise) throw new Error('No Promise implementation available.');
 	return new Promise((resolve, reject) => {
-		return this.transfer(length, (self, err, buff) => {
+		return this.transfer(length, (err, buff) => {
 			if(err) return reject(err);
 			resolve(buff);
 		});
@@ -160,7 +173,7 @@ usb.OutEndpoint.prototype.transfer = function(buffer, cb) {
 	const Promise = usb.Promise || global.Promise;
 	if(!Promise) throw new Error('No Promise implementation available.');
 	return new Promise((resolve, reject) => {
-		this.transfer(length, (self, err) => {
+		this.transfer(length, (err) => {
 			if(err) return reject(err);
 			resolve();
 		});
@@ -173,7 +186,7 @@ usb.OutEndpoint.prototype.transferWithZLP = function (buf, cb) {
 	const Promise = usb.Promise || global.Promise;
 	if(!Promise) throw new Error('No Promise implementation available.');
 	return new Promise((resolve, reject) => {
-		this.transferWithZLP(buf, (self, err) => {
+		this.transferWithZLP(buf, (err) => {
 			if(err) return reject(err);
 			resolve();
 		});
